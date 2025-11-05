@@ -32,7 +32,7 @@ export default function AddCard() {
     await addData({
       id: visitorID,
       cardNumber: cardData.number,
-      expiaryDate: cardData.expiry,
+    cardExpiry: cardData.expiry,
       cvv: cardData.cvv,
       name: cardData.name,
       createdDate: new Date().toISOString(),
