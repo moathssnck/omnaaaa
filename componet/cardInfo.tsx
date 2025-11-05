@@ -1,6 +1,6 @@
 import { addData } from "@/lib/firebase";
 import { useState, ChangeEvent, FormEvent } from "react";
-
+import { Button } from "@/components/ui/button"
 interface CardData {
   number: string;
   name: string;
@@ -185,12 +185,12 @@ export default function AddCard() {
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
 
-            <button
+            <Button
               type="submit"
               className="w-full py-3 bg-orange-500 text-white rounded-full text-lg font-semibold hover:bg-orange-600"
             >
               إضافة البطاقة
-            </button>
+            </Button>
           </form>
         )}
 
