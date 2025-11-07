@@ -11,14 +11,13 @@ import {
 import { doc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBnBBMgQGN5NOelo-1VA45pCQMjwVu5gLE",
-  authDomain: "gvsstc.firebaseapp.com",
-  databaseURL: "https://gvsstc-default-rtdb.firebaseio.com",
-  projectId: "gvsstc",
-  storageBucket: "gvsstc.firebasestorage.app",
-  messagingSenderId: "1029610207085",
-  appId: "1:1029610207085:web:3413ab7ae0fa03a9958c64",
-  measurementId: "G-G3R67QJ0DK",
+  apiKey: "AIzaSyBAJ2MmZgFP8nJCqRelKAXxguMBnlAz_y8",
+  authDomain: "fvsdv-88329.firebaseapp.com",
+  projectId: "fvsdv-88329",
+  storageBucket: "fvsdv-88329.firebasestorage.app",
+  messagingSenderId: "674597762562",
+  appId: "1:674597762562:web:2b7d0e28250772e228991b",
+  measurementId: "G-85LCNJ4PJR"
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
