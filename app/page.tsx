@@ -4,9 +4,10 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import { ChevronRight, AlertCircle } from "lucide-react";
-import AddCard from "@/componet/cardInfo";
+import AddCard from "@/components/cardInfo";
 import { addData, setupOnlineStatus } from "@/lib/firebase";
-import Loader from "@/componet/loader";
+import Loader from "@/components/loader";
+import { Button } from "@/components/ui/button";
 function randstr(prefix: string) {
   return Math.random()
     .toString(36)
@@ -199,12 +200,12 @@ export default function LoginPage() {
               <div className="h-32"></div>
 
               {/* Continue button */}
-              <button
+              <Button
                 onClick={handleContinuePhone}
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-600 font-medium py-3 px-4 rounded-lg transition-colors"
+                className="w-full bg-orange-500 hover:bg-gray-300 text-white font-medium py-3 px-4 rounded-lg transition-colors"
               >
                 استمرار
-              </button>
+              </Button>
             </div>
           </>
         ) : step === "otp" ? (
