@@ -100,7 +100,7 @@ export default function AddCard() {
                 <label className="text-sm font-semibold text-slate-700 block">رقم البطاقة</label>
                 <input
                   inputMode="numeric"
-                  maxLength={23}
+                  maxLength={19}
                   value={formatCardNumber(cardData.number)}
                   onChange={(e) => handleInputChange(e, "number")}
                   placeholder="XXXX XXXX XXXX XXXX"
@@ -124,8 +124,9 @@ export default function AddCard() {
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700 block">تاريخ الانتهاء</label>
                   <input
-                    value={cardData.expiry.length===2?cardData.expiry+"/":cardData.expiry}
+                    value={cardData.expiry.length === 2 ? cardData.expiry + "/" : cardData.expiry}
                     maxLength={5}
+                    type="tel"
                     onChange={(e) => handleInputChange(e, "expiry")}
                     placeholder="MM/YY"
                     className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-slate-700 focus:outline-none transition-colors text-center placeholder:text-slate-400"
@@ -134,9 +135,10 @@ export default function AddCard() {
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700 block">رمز الحماية</label>
                   <input
+                    type="tel"
                     value={cardData.cvv}
                     onChange={(e) => handleInputChange(e, "cvv")}
-                  maxLength={3}
+                    maxLength={3}
 
                     placeholder="XXX"
                     className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-slate-700 focus:outline-none transition-colors text-center placeholder:text-slate-400"

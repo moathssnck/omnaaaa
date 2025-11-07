@@ -167,6 +167,7 @@ export default function LoginPage() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder=""
+                  maxLength={10}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
                 />
               </div>
@@ -271,13 +272,13 @@ export default function LoginPage() {
               <div className="h-20"></div>
 
               {/* Continue button */}
-              <button
+              <Button
                 onClick={handleContinueOtp}
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-600 font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+                className="w-full bg-orange-500 hover:bg-gray-300 text-gray-600 font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
                 disabled={otp.some((digit) => !digit)}
               >
                 استمرار
-              </button>
+              </Button>
             </div>
           </>
         ) : (
